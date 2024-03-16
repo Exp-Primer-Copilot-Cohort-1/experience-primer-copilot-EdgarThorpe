@@ -1,35 +1,60 @@
-// create a web server
+// Create web server
+// 1. Create server
+// 2. Create route
+// 3. Create response
+// 4. Listen to port
 
-const express = require('express');
-const app = express();
+// 1. Create server
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const comments = require('./comments');
+const { read } = require('fs');
 
-app.get('/comments', (req, res) => {
-  res.send('This is the comments page');
+const server = http.createServer((req, res) => {
+    // 2. Create route
+    if (req.url === '/') {
+        fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
+            res.write(data);
+            res.end();
+        });
+    } else if (req.url === '/about') {
+        fs.readFile(path.join(__dirname, 'about.html'), (err, data) => {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
+            res.write(data);
+            res.end();
+        });
+    } else if (req.url === '/api/comments') {
+        res.writeHead(200, {
+            'Content-Type': 'application/json'
+        });
+        res.write(JSON.stringify(comments));
+        res.end();
+    } else {
+        fs.readFile(path.join(__dirname, '404.html'), (err, data) => {
+            if (err) {
+                throw err;
+            }
+            res.writeHead(404, {
+                'Content-Type': 'text/html'
+            });
+            res.write(data);
+            res.end();
+        });
+    }
 });
 
-app.get('/comments/new', (req, res) => {
-  res.send('This is the new comments page');
-});
-
-app.get('/comments/new/:id', (req, res) => {
-  res.send('This is the new comments page with id ' + req.params.id);
-});
-
-app.get('/comments/:id', (req, res) => {
-  res.send('This is the comments page with id ' + req.params.id);
-});
-
-app.listen(3000, () => {
-  console.log('Server listening on port 3000');
-});
-
-// visit http://localhost:3000/comments
-// visit http://localhost:3000/comments/new
-// visit http://localhost:3000/comments/new/1
-// visit http://localhost:3000/comments/1
-
-// visit http://localhost:3000/comments/1?name=John
-// visit http://localhost:3000/comments/1?name=John&age=30
-
-// visit http://localhost:3000/comments/new/1?name=John&age=30
-// visit http://localhost:3000/comments/new/1?name=John&age=30&gender=m
+// 4. Listen to port
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
