@@ -1,13 +1,35 @@
 // create a web server
 
-var http = require('http');
-var fs = require('fs');
+const express = require('express');
+const app = express();
 
-var server = http.createServer(function(req, res) {
-  console.log('request was made: ' + req.url);
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  var myReadStream = fs.createReadStream(__dirname + '/index.html', 'utf8');
-  myReadStream.pipe(res);
+app.get('/comments', (req, res) => {
+  res.send('This is the comments page');
 });
 
-server.listen(3000, '
+app.get('/comments/new', (req, res) => {
+  res.send('This is the new comments page');
+});
+
+app.get('/comments/new/:id', (req, res) => {
+  res.send('This is the new comments page with id ' + req.params.id);
+});
+
+app.get('/comments/:id', (req, res) => {
+  res.send('This is the comments page with id ' + req.params.id);
+});
+
+app.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
+
+// visit http://localhost:3000/comments
+// visit http://localhost:3000/comments/new
+// visit http://localhost:3000/comments/new/1
+// visit http://localhost:3000/comments/1
+
+// visit http://localhost:3000/comments/1?name=John
+// visit http://localhost:3000/comments/1?name=John&age=30
+
+// visit http://localhost:3000/comments/new/1?name=John&age=30
+// visit http://localhost:3000/comments/new/1?name=John&age=30&gender=m
